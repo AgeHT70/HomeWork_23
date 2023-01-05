@@ -6,6 +6,17 @@
         "file_name": "apache_logs.txt",
         "queries": 
             [
+               {
+                    "cmd": "regex",
+                    "value": "images/\\S+\\.png"
+                }
+            ]
+    }
+
+    {
+        "file_name": "apache_logs.txt",
+        "queries": 
+            [
                 {
                     "cmd": "filter",
                     "value": "POST"
