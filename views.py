@@ -15,25 +15,27 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 
 @main_bp.route("/perform_query", methods=["POST"])
 def perform_query() -> Response:
+    if request.json is not None:
+        try:
+            validated_data: dict = BatchRequestSchema().load(
+                data=request.json)
+        except ValidationError as e:
+            return Response(response=e.messages, status=400)
 
-    try:
-        validated_data: dict = BatchRequestSchema().load(
-            data=request.json)
-    except ValidationError as e:
-        return Response(response=e.messages, status=400)
+        queries: list[dict[str, str]] = validated_data["queries"]
 
-    queries: list[dict[str, str]] = validated_data["queries"]
+        file_name = os.path.join(DATA_DIR, validated_data['file_name'])
 
-    file_name = os.path.join(DATA_DIR, validated_data['file_name'])
+        result: Optional[Iterable[str]] = None
 
-    result: Optional[Iterable[str]] = None
+        for query in queries:
+            result = execute(
+                cmd=query['cmd'],
+                value=query['value'],
+                filename=file_name,
+                data=result
+            )
 
-    for query in queries:
-        result = execute(
-            cmd=query['cmd'],
-            value=query['value'],
-            filename=file_name,
-            data=result
-        )
-
-    return jsonify(result)
+        return jsonify(result)
+    else:
+        return Response(response="Bad request", status=400)

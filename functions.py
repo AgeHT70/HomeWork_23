@@ -46,9 +46,9 @@ CMDS: dict[str, Callable] = {
 
 
 def execute(value: str, cmd: str, filename: str,
-            data: Optional[Iterator[str]]) -> list[str]:
+            data: Optional[Iterable[str]]) -> list[str]:
     if data is None:
-        prepared_data: Iterator[str] = read_file(filename)
+        prepared_data: Iterable[str] = read_file(filename)
     else:
         prepared_data = data
 
